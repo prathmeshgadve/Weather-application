@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <link rel="stylesheet" href="new.css" media="print" onload="this.media='all'">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js" defer></script>
+
+    <style>
+        
+        .news-image {
+            height: 200px;
+            width: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .c-weather:hover .news-image {
+            transform: scale(1.03);
+        }
+
+        .c-weather {
+            transition: box-shadow 0.3s ease;
+        }
+
+        .c-weather:hover {
+            box-shadow: 0 0 15px rgba(74, 156, 212, 0.3);
+        }
+
+        #loading {
+            min-height: 300px;
+        }
+    </style>
+</head>
+
+<body id="bg-dark">
+
+    <nav class="navbar shadow-lg">
+        <div class="container-xxl navbar-expand-md navbar-light ">
+            <a href="Weather App" class="navbar-brand">
+                <span class="fw-bolder fc-white fs-2 text-white">WeatherWise</span>
+            </a>
+            <button class="navbar-toggler " data-bs-toggle="collapse" data-bs-target="#main-nav" type="button">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end  mt-md-1" id="main-nav">
+                <ul class="navbar-nav">
+                    <li class="nav-item mx-2">
+                        <a href="new.html" class="nav-link">Home</a>
+                    </li>
+                    <li class="nav-item mx-3">
+                        <a href="about.html" class="nav-link">About</a>
+                    </li>
+                    <li class="nav-item mx-3">
+                        <a href="links.html" class="nav-link">Links</a>
+                    </li>
+                    <li class="nav-item mx-3">
+                        <a href="news.html" class="nav-link">News</a>
+                    </li>
+                    <li class="nav-item mx-3">
+                        <a href="aibot.html" class="nav-link">AI-bot</a>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+    </nav>
+    
+    <main class="container py-5">
+        <h1 class="text-white mb-4">Latest Weather News</h1>
+        
+        <div class="row g-4" id="newsContainer">
+            <!-- News articles will be inserted here -->
+        </div>
+
+        <!-- Loading spinner -->
+        <div id="loading" class="text-center py-5">
+            <div class="spinner-border text-light" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+
+        <!-- Error message -->
+        <div id="error" class="alert alert-danger d-none" role="alert">
+            Failed to load news. Please try again later.
+        </div>
+    </main>
+
+    <script>
+        // Get your free API key from https://newsapi.org/
+        const API_KEY = 'a52d0445e9c943d38b3549e7c790c8e4';
+        const NEWS_API = `https://newsapi.org/v2/everything?q=weather+OR+climate+OR+meteorology&sortBy=publishedAt&apiKey=${API_KEY}`;
+
+        // News container elements
+        const newsContainer = document.getElementById('newsContainer');
+        const loading = document.getElementById('loading');
+        const error = document.getElementById('error');
+
+        async function fetchWeatherNews() {
+            try {
+                const response = await fetch(NEWS_API);
+                const data = await response.json();
+                
+                if (data.status === 'ok') {
+                    newsContainer.innerHTML = data.articles.map(article => `
+                        <div class="col-md-6 col-lg-4">
+                            <div class="c-weather p-3 h-100">
+                                <img src="${article.urlToImage || 'https://picsum.photos/400/200?random=1'}" 
+                                     alt="${article.title}" 
+                                     class="img-fluid rounded mb-3 news-image">
+                                <h4 class="text-white mb-3">${article.title}</h4>
+                                <p class="text-white-50">${article.description?.substring(0, 100)}...</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <a href="${article.url}" 
+                                       class="text-decoration-none text-info" 
+                                       target="_blank">Read more →</a>
+                                    <small class="text-muted">${new Date(article.publishedAt).toLocaleDateString()}</small>
+                                </div>
+                                <small class="d-block text-muted mt-2">Source: ${article.source.name}</small>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    throw new Error(data.message);
+                }
+            } catch (err) {
+                error.classList.remove('d-none');
+                console.error('News fetch error:', err);
+            } finally {
+                loading.classList.add('d-none');
+            }
+        }
+
+        // Initial load
+        fetchWeatherNews();
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="new.js"></script>
+</body>
+
+</html>
+
+
+
+

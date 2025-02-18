@@ -1,0 +1,4 @@
+const newLocal = {
+    apiKey: "FKRB9VXQWWHMP82PLNFXWP7B7",
+    apiKey2: "AHMLAJBDTBH82NSMYQRSKH5X5"
+};
